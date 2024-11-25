@@ -20,8 +20,8 @@ torch.use_deterministic_algorithms(True)
 
 device       = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # device       = torch.device("mps")
-total_epochs = 16
-batch_size   = 16
+total_epochs = 64
+batch_size   = 32
 
 if __name__ == "__main__":
 

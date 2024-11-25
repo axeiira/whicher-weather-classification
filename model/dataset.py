@@ -22,12 +22,12 @@ class SimpleTorchDataset(torch.utils.data.Dataset):
         self.__add_dataset__("St",      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1])
 
         post_processing = [
-            transforms.CenterCrop((128, 128)),
+            transforms.CenterCrop((256, 256)),
             transforms.ToTensor()
         ]
 
         self.augmentation = transforms.Compose(
-            [transforms.Resize((150, 150))] +   # List Concatination
+            # [transforms.Resize((227, 227))] +   # List Concatination
             aug                             +   # List Concatination
             post_processing
         )

@@ -18,8 +18,9 @@ np.random.seed(SEED)
 
 torch.use_deterministic_algorithms(True)
 
-device       = torch.device("mps")
-total_epochs = 64
+device       = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# device       = torch.device("mps")
+total_epochs = 16
 batch_size   = 16
 
 if __name__ == "__main__":
@@ -30,13 +31,13 @@ if __name__ == "__main__":
     print("| Batch Size  :", batch_size)
     print("| Device      :", device)
 
-    logger  = DataLogger("WeatherClassification")
+    logger  = DataLogger("CloudClassification")
     metrics = ModelTesterMetrics()
 
     metrics.loss       = torch.nn.BCEWithLogitsLoss()
     metrics.activation = torch.nn.Softmax(1)
 
-    model        = SimpleCNN(7).to(device)
+    model        = SimpleCNN(11).to(device)
     optimizer    = torch.optim.Adam(model.parameters(), lr = 0.00001)
 
     training_augmentation = [
@@ -44,9 +45,9 @@ if __name__ == "__main__":
         #transforms.RandomVerticalFlip(),
     ]
 
-    validation_dataset = SimpleTorchDataset('model/datasets/val')
-    training_dataset   = SimpleTorchDataset('model/datasets/train', training_augmentation)
-    testing_dataset    = SimpleTorchDataset('model/datasets/test')
+    training_dataset   = SimpleTorchDataset('./model/cloud_dataset/CCSN_split/train', training_augmentation)
+    testing_dataset    = SimpleTorchDataset('./model/cloud_dataset/CCSN_split/test')
+    validation_dataset = SimpleTorchDataset('./model/cloud_dataset/CCSN_split/val')
 
     validation_datasetloader = DataLoader(validation_dataset, batch_size = batch_size, shuffle = True)
     training_datasetloader   = DataLoader(training_dataset,   batch_size = batch_size, shuffle = True)

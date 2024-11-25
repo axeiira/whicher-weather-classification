@@ -9,13 +9,17 @@ class SimpleTorchDataset(torch.utils.data.Dataset):
         self.dataset : list[tuple[str, np.ndarray]] = []
         self.root_dir = root_dir
         
-        self.__add_dataset__("cloudy",      [1, 0, 0, 0, 0, 0, 0])
-        self.__add_dataset__("foggy",       [0, 1, 0, 0, 0, 0, 0])
-        self.__add_dataset__("rainy",       [0, 0, 1, 0, 0, 0, 0])
-        self.__add_dataset__("snowy",       [0, 0, 0, 1, 0, 0, 0])
-        self.__add_dataset__("sunny",       [0, 0, 0, 0, 1, 0, 0])
-        self.__add_dataset__("sunrise",     [0, 0, 0, 0, 0, 1, 0])
-        self.__add_dataset__("thunderstorm",[0, 0, 0, 0, 0, 0, 1])
+        self.__add_dataset__("Ac",      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+        self.__add_dataset__("As",      [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+        self.__add_dataset__("Cb",      [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0])
+        self.__add_dataset__("Cc",      [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0])
+        self.__add_dataset__("Ci",      [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0])
+        self.__add_dataset__("Cs",      [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0])
+        self.__add_dataset__("Ct",      [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0])
+        self.__add_dataset__("Cu",      [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0])
+        self.__add_dataset__("Ns",      [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0])
+        self.__add_dataset__("Sc",      [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0])
+        self.__add_dataset__("St",      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1])
 
         post_processing = [
             transforms.CenterCrop((128, 128)),

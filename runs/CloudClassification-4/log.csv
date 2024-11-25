@@ -1,0 +1,2 @@
+epoch,training_loss,training_accuracy,validation_loss,validation_accuracy,time_stamp
+0,0.5681729378799597,0.091796875,0.45333779208800373,0.08700980421374827,2024-11-25 17:07:40.156620

@@ -41,8 +41,11 @@ if __name__ == "__main__":
     optimizer    = torch.optim.Adam(model.parameters(), lr = 0.00001)
 
     training_augmentation = [
-        #transforms.RandomHorizontalFlip(),
-        #transforms.RandomVerticalFlip(),
+        transforms.RandomHorizontalFlip(),
+        transforms.RandomAffine(degrees=0, shear=10),
+        transforms.RandomRotation(10),
+        transforms.RandomAffine(degrees=0, translate=(0.1, 0.1)),
+        transforms.RandomAffine(degrees=0, scale=(0.8, 1.2)),
     ]
 
     training_dataset   = SimpleTorchDataset('./model/cloud_dataset/CCSN_split/train', training_augmentation)

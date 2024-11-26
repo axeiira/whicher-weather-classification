@@ -35,40 +35,28 @@ class SimpleCNN(nn.Module):
         self.block_1 = BasicConvBlock(3, 96, 11)
         self.block_2 = BasicConvBlock(96, 256, 5)
         self.conv_3 = nn.Conv2d(256, 384, kernel_size = 3, padding = 'same')
+        # self.block_3 = BasicConvBlock(128, 256, 3)
         self.block_4 = BasicConvBlock(384, 256, 3)
-        self.pool = nn.MaxPool2d(kernel_size = 3, stride = 2)
+        # self.pool = nn.MaxPool2d(kernel_size = 3, stride = 2)
         self.flatten = nn.Flatten()
-        # self.pool    = nn.AdaptiveMaxPool2d(1)
-        # 3, 128, 128
-        # self.conv_1  = nn.Conv2d(3, 16, kernel_size = 7, padding = "same")
-        
-        # 32, 64, 64
-        
-        # 64, 32, 32
-
-        # 128,16, 16
-
-        # 256, 8,  8
-
-        # 256, 1, 1
-        # RESHAPE 
-        # 256
 
         self.head = nn.Sequential(
-            # nn.Dropout(0.5),
-            # nn.Linear(4096, 2304//2),
+            nn.Dropout(0.5),
+            # nn.Linear(384, 384//2),
             # nn.LeakyReLU(),
-            nn.Linear(4096, output_class)
+            nn.Linear(4096, output_class),
+            # nn.Linear
         )
     
     def forward(self, x : torch.Tensor) -> torch.Tensor:
 
         x = self.block_1(x) # (N,  3, 256, 256) => (N,  96,  85,  85)
         x = self.block_2(x) # (N,  96,  85,  85) => (N,  256,  28,  28)
-        x = self.conv_3(x) # (N,  256,  28,  28) => (N,  384,  28,  28)
+        x = self.conv_3(x)
         x = self.block_4(x) # (N,  384,  28,  28) => (N,  256,   9,   9)        
-        x = self.pool(x)    # (N, 256,   9,   9) => (N, 256,   4,   4)
         x = self.flatten(x) # (N, 256,   4,   4) => (N, 4096)    
+
+        # print(x.size())
 
         # RESHAPE OPERATION
         bz = x.size(0)      # batch   size

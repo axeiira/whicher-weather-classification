@@ -11,6 +11,7 @@ from helper_tester  import ModelTesterMetrics
 from dataset        import SimpleTorchDataset
 from torchvision    import transforms
 
+
 SEED = 424242
 torch.manual_seed(SEED)
 random.seed(SEED)
@@ -18,10 +19,10 @@ np.random.seed(SEED)
 
 torch.use_deterministic_algorithms(True)
 
-device       = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device       = torch.device("cpu")
 # device       = torch.device("mps")
-total_epochs = 64
-batch_size   = 32
+total_epochs = 32
+batch_size   = 16
 
 if __name__ == "__main__":
 
@@ -37,15 +38,17 @@ if __name__ == "__main__":
     metrics.loss       = torch.nn.BCEWithLogitsLoss()
     metrics.activation = torch.nn.Softmax(1)
 
-    model        = SimpleCNN(11).to(device)
-    optimizer    = torch.optim.Adam(model.parameters(), lr = 0.00001)
+    model        = BasicMobileNet(11).to(device)
+    # model        = SimpleCNN(11).to(device)
+    optimizer    = torch.optim.Adam(model.parameters(), lr = 0.001)
 
     training_augmentation = [
         transforms.RandomHorizontalFlip(),
-        transforms.RandomAffine(degrees=0, shear=10),
-        transforms.RandomRotation(10),
-        transforms.RandomAffine(degrees=0, translate=(0.1, 0.1)),
-        transforms.RandomAffine(degrees=0, scale=(0.8, 1.2)),
+        transforms.RandomAffine(degrees=20, translate=(0.1, 0.1), scale=(0.9, 1.1), shear=10),
+        # transforms.RandomCrop((224, 224)),
+        transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3, hue=0.1),
+        transforms.GaussianBlur(3, sigma=(0.1, 2.0)),
+        transforms.RandomGrayscale(p=0.2)
     ]
 
     training_dataset   = SimpleTorchDataset('./model/cloud_dataset/CCSN_split/train', training_augmentation)

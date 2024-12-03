@@ -37,14 +37,15 @@ class SimpleCNN(nn.Module):
         self.conv_3 = nn.Conv2d(256, 384, kernel_size = 3, padding = 'same')
         # self.block_3 = BasicConvBlock(128, 256, 3)
         self.block_4 = BasicConvBlock(384, 256, 3)
+        # self.block_5 = BasicConvBlock(256, 128, 3)
         # self.pool = nn.MaxPool2d(kernel_size = 3, stride = 2)
         self.flatten = nn.Flatten()
 
         self.head = nn.Sequential(
+            nn.Linear(4096, 2048),
             nn.Dropout(0.5),
-            # nn.Linear(384, 384//2),
-            # nn.LeakyReLU(),
-            nn.Linear(4096, output_class),
+            nn.LeakyReLU(),
+            nn.Linear(2048, output_class),
             # nn.Linear
         )
     
@@ -53,7 +54,8 @@ class SimpleCNN(nn.Module):
         x = self.block_1(x) # (N,  3, 256, 256) => (N,  96,  85,  85)
         x = self.block_2(x) # (N,  96,  85,  85) => (N,  256,  28,  28)
         x = self.conv_3(x)
-        x = self.block_4(x) # (N,  384,  28,  28) => (N,  256,   9,   9)        
+        x = self.block_4(x) # (N,  384,  28,  28) => (N,  256,   9,   9)
+        # x = self.block_5(x)
         x = self.flatten(x) # (N, 256,   4,   4) => (N, 4096)    
 
         # print(x.size())
@@ -71,12 +73,16 @@ class BasicMobileNet(nn.Module):
         super().__init__()
 
         self.base = tv.models.mobilenet_v3_small(weights = tv.models.MobileNet_V3_Small_Weights.DEFAULT)
+        # self.base = tv.models.mobilenet_v3_small(pretrained = True)
+
         self.base.classifier = nn.Sequential(
             nn.Linear(576, 128),
             nn.LeakyReLU(),
             nn.Dropout(0.25),
             nn.Linear(128, output_classes)
         )
+
+        # self.base.classifier[3] = nn.Linear(576, output_classes)
     
     def forward(self, x : torch.Tensor) -> torch.Tensor:
         x = self.base(x)

@@ -20,8 +20,8 @@ torch.use_deterministic_algorithms(True)
 
 device       = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # device       = torch.device("mps")
-total_epochs = 16
-batch_size   = 16
+total_epochs = 64
+batch_size   = 32
 
 if __name__ == "__main__":
 
@@ -34,24 +34,35 @@ if __name__ == "__main__":
     logger  = DataLogger("CloudClassification")
     metrics = ModelTesterMetrics()
 
-    metrics.loss       = torch.nn.BCEWithLogitsLoss()
+    metrics.loss       = torch.nn.CrossEntropyLoss()
     metrics.activation = torch.nn.Softmax(1)
 
-    model        = SimpleCNN(11).to(device)
-    optimizer    = torch.optim.Adam(model.parameters(), lr = 0.00001)
+    # model        = BasicMobileNet(6).to(device)
+    model        = SimpleCNN(6).to(device)
+    # model        = SimpleCNN(3).to(device)
+    optimizer    = torch.optim.Adam(model.parameters(), lr = 0.001)
 
     training_augmentation = [
-        #transforms.RandomHorizontalFlip(),
-        #transforms.RandomVerticalFlip(),
+        transforms.RandomHorizontalFlip(),
+        transforms.RandomAffine(degrees=45, translate=(0.2, 0.2), scale=(0.8, 1.2), shear=20),
+        # transforms.RandomCrop((224, 224)),
+        transforms.ColorJitter(brightness=0.5, contrast=0.5, saturation=0.5, hue=0.1),
+        transforms.GaussianBlur(3, sigma=(0.1, 2.0)),
+        transforms.RandomGrayscale(p=0.2)
     ]
 
-    training_dataset   = SimpleTorchDataset('./model/cloud_dataset/CCSN_split/train', training_augmentation)
-    testing_dataset    = SimpleTorchDataset('./model/cloud_dataset/CCSN_split/test')
-    validation_dataset = SimpleTorchDataset('./model/cloud_dataset/CCSN_split/val')
+    # prefix = "./model/cloud_dataset/CCSN_split/"
+    # prefix = "./model/animal_dataset/"
+    # prefix = "./model/harvard_cloud_dataset/"
+    prefix = "./model/GCD/"
 
-    validation_datasetloader = DataLoader(validation_dataset, batch_size = batch_size, shuffle = True)
+    training_dataset   = SimpleTorchDataset(prefix+'train', training_augmentation)
+    testing_dataset    = SimpleTorchDataset(prefix+'test')
+    validation_dataset = SimpleTorchDataset(prefix+'val')
+
     training_datasetloader   = DataLoader(training_dataset,   batch_size = batch_size, shuffle = True)
-    testing_datasetloader    = DataLoader(testing_dataset,    batch_size = 1,          shuffle = True)
+    testing_datasetloader    = DataLoader(testing_dataset,    batch_size = batch_size, shuffle = True)
+    validation_datasetloader = DataLoader(validation_dataset, batch_size = 1, shuffle = True)
 
     # Training Evaluation Loop
     for current_epoch in range(total_epochs):
@@ -79,7 +90,7 @@ if __name__ == "__main__":
         model.eval()    # set the model to evaluation
         metrics.reset() # reset the metrics
 
-        for (image, label) in tqdm(validation_datasetloader, desc = "Testing  :"):
+        for (image, label) in tqdm(testing_datasetloader, desc = "Testing  :"):
             
             image = image.to(device)
             label = label.to(device)
@@ -128,7 +139,7 @@ if __name__ == "__main__":
     model.eval()    # set the model to evaluation
     metrics.reset() # reset the metrics
 
-    for (image, label) in tqdm(testing_datasetloader):
+    for (image, label) in tqdm(validation_datasetloader):
         
         image = image.to(device)
         label = label.to(device)

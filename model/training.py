@@ -6,7 +6,8 @@ from tqdm             import tqdm
 from torch.utils.data import DataLoader
 
 from helper_logger  import DataLogger
-from model_base     import SimpleCNN, BasicMobileNet
+from model_base     import SimpleCNN, BasicMobileNet, UpSimpleCNN
+from model_base2 import CustomCNN
 from helper_tester  import ModelTesterMetrics
 from dataset        import SimpleTorchDataset
 from torchvision    import transforms
@@ -18,9 +19,9 @@ np.random.seed(SEED)
 
 torch.use_deterministic_algorithms(True)
 
-device       = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-# device       = torch.device("mps")
-total_epochs = 64
+# device       = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device       = torch.device("mps")
+total_epochs = 22
 batch_size   = 32
 
 if __name__ == "__main__":
@@ -38,23 +39,24 @@ if __name__ == "__main__":
     metrics.activation = torch.nn.Softmax(1)
 
     # model        = BasicMobileNet(6).to(device)
-    model        = SimpleCNN(6).to(device)
+    model        = CustomCNN().to(device)
     # model        = SimpleCNN(3).to(device)
     optimizer    = torch.optim.Adam(model.parameters(), lr = 0.001)
 
     training_augmentation = [
+        transforms.RandomRotation(degrees=45),
         transforms.RandomHorizontalFlip(),
-        transforms.RandomAffine(degrees=45, translate=(0.2, 0.2), scale=(0.8, 1.2), shear=20),
-        # transforms.RandomCrop((224, 224)),
-        transforms.ColorJitter(brightness=0.5, contrast=0.5, saturation=0.5, hue=0.1),
-        transforms.GaussianBlur(3, sigma=(0.1, 2.0)),
-        transforms.RandomGrayscale(p=0.2)
+        transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.2),
+        transforms.RandomResizedCrop(size=(177, 177), scale=(0.8, 1.2)),
+        transforms.RandomAffine(degrees=15, translate=(0.1, 0.1), scale=(0.9, 1.1)),
+        transforms.GaussianBlur(kernel_size=3, sigma=(0.1, 2.0)),
+        transforms.RandomGrayscale(p=0.1)
     ]
 
     # prefix = "./model/cloud_dataset/CCSN_split/"
     # prefix = "./model/animal_dataset/"
     # prefix = "./model/harvard_cloud_dataset/"
-    prefix = "./model/GCD/"
+    prefix = "model/GCD/"
 
     training_dataset   = SimpleTorchDataset(prefix+'train', training_augmentation)
     testing_dataset    = SimpleTorchDataset(prefix+'test')

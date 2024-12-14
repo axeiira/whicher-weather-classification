@@ -26,3 +26,6 @@ dist-ssr
 # Added
 .pyc
 /runs
+model/__pycache__
+model/split_dataset_1
+model/split_data.py

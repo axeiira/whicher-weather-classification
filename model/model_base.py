@@ -28,6 +28,45 @@ class BasicConvBlock(nn.Module):
         x = self.conv(x)
         x = self.pool(x)
         return x
+    
+class UpBasicConvBlock(nn.Module):
+    def __init__(self, in_channels, out_channels, kernel_size):
+        super(UpBasicConvBlock, self).__init__()
+        self.conv = nn.Conv2d(in_channels, out_channels, kernel_size, padding='same')
+        self.bn = nn.BatchNorm2d(out_channels)
+        self.relu = nn.ReLU()
+
+    def forward(self, x):
+        return self.relu(self.bn(self.conv(x)))
+
+class UpSimpleCNN(nn.Module):
+    def __init__(self, output_class: int) -> None:
+        super(UpSimpleCNN, self).__init__()
+
+        self.block_1 = nn.Conv2d(3, 64, kernel_size=3, padding='same')
+        self.block_2 = UpBasicConvBlock(64, 128, 3)
+        self.block_3 = nn.Conv2d(128, 128, kernel_size=3, padding='same')
+        self.block_4 = UpBasicConvBlock(128, 64, 3)
+        self.block_5 = nn.AdaptiveMaxPool2d(6)
+        self.flatten = nn.Flatten()
+
+        self.head = nn.Sequential(
+            nn.Linear(2304, 1024),
+            nn.ReLU(),
+            nn.Dropout(0.5),
+            nn.Linear(1024, output_class),
+        )
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        x = self.block_1(x)
+        x = self.block_2(x)
+        x = self.block_3(x)
+        x = self.block_4(x)
+        x = self.block_5(x)
+        x = self.flatten(x)
+
+        x = self.head(x)
+        return x
 
 class SimpleCNN(nn.Module):
     def __init__(self, output_class : int) -> None:
@@ -41,10 +80,10 @@ class SimpleCNN(nn.Module):
         self.flatten = nn.Flatten()
 
         self.head = nn.Sequential(
-            nn.Linear(2304, 512),
+            nn.Linear(2304, 2304),
             nn.LeakyReLU(),
             nn.Dropout(0.5),
-            nn.Linear(512, output_class),
+            nn.Linear(2304, output_class),
             # nn.Softmax(1),
         )
     

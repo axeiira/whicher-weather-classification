@@ -36,14 +36,13 @@ class SimpleTorchDataset(torch.utils.data.Dataset):
         # self.__add_dataset__("Stratocumulus",    [0, 0, 0, 0, 0, 0, 0, 0, 1, 0])
         # self.__add_dataset__("Stratus",          [0, 0, 0, 0, 0, 0, 0, 0, 0, 1])
 
-        self.__add_dataset__("1_cumulus",               [1, 0, 0, 0, 0, 0])
-        self.__add_dataset__("2_altocumulus",           [0, 1, 0, 0, 0, 0])
-        self.__add_dataset__("3_cirrus",                [0, 0, 1, 0, 0, 0])
-        self.__add_dataset__("4_clearsky",              [0, 0, 0, 1, 0, 0])
-        self.__add_dataset__("5_stratocumulus",         [0, 0, 0, 0, 1, 0])
-        self.__add_dataset__("6_cumulonimbus",          [0, 0, 0, 0, 0, 1])
-
-        # self.__add_dataset__("7_mixed",                 [0, 0, 0, 0, 0, 0, 1])
+        self.__add_dataset__("1_cumulus",               [1, 0, 0, 0, 0, 0, 0])
+        self.__add_dataset__("2_altocumulus",           [0, 1, 0, 0, 0, 0, 0])
+        self.__add_dataset__("3_cirrus",                [0, 0, 1, 0, 0, 0, 0])
+        self.__add_dataset__("4_clearsky",              [0, 0, 0, 1, 0, 0, 0])
+        self.__add_dataset__("5_stratocumulus",         [0, 0, 0, 0, 1, 0, 0])
+        self.__add_dataset__("6_cumulonimbus",          [0, 0, 0, 0, 0, 1, 0])
+        self.__add_dataset__("7_mixed",                 [0, 0, 0, 0, 0, 0, 1])
 
         post_processing = [
             transforms.CenterCrop((128, 128)),
@@ -51,7 +50,7 @@ class SimpleTorchDataset(torch.utils.data.Dataset):
         ]
 
         self.augmentation = transforms.Compose(
-            [transforms.Resize((150, 150))] +   # List Concatination
+            [transforms.Resize((177, 177))] +   # List Concatination
             aug                             +   # List Concatination
             post_processing
         )
